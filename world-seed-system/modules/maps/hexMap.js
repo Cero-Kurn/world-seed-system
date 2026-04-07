@@ -1,42 +1,3 @@
-// Axial hex directions (pointy-top)
-const HEX_DIRS = [
-  { q: +1, r: 0 },
-  { q: +1, r: -1 },
-  { q: 0, r: -1 },
-  { q: -1, r: 0 },
-  { q: -1, r: +1 },
-  { q: 0, r: +1 }
-];
-
-function getNeighbors(q, r, cols, rows) {
-  const neighbors = [];
-  for (const d of HEX_DIRS) {
-    const nq = q + d.q;
-    const nr = r + d.r;
-    if (nq >= 0 && nq < cols && nr >= 0 && nr < rows) {
-      neighbors.push({ q: nq, r: nr });
-    }
-  }
-  return neighbors;
-}
-function findDownhill(q, r, hexes, cols, rows) {
-  const current = hexes[r][q];
-  let lowest = current;
-  let target = null;
-
-  const neighbors = getNeighbors(q, r, cols, rows);
-
-  for (const n of neighbors) {
-    const neighbor = hexes[n.r][n.q];
-    if (neighbor.elevationValue < lowest.elevationValue) {
-      lowest = neighbor;
-      target = neighbor;
-    }
-  }
-
-  return target; // null if no lower neighbor
-}
-
 // Simple deterministic noise based on q, r
 function noise(q, r) {
   const n = Math.sin(q * 12.9898 + r * 78.233) * 43758.5453;
@@ -58,6 +19,28 @@ const HEX_COLORS = {
   "alpine": "#bfc0c0",
   "mixed": "#999999"
 };
+
+// Axial hex directions (pointy-top)
+const HEX_DIRS = [
+  { q: +1, r: 0 },
+  { q: +1, r: -1 },
+  { q: 0, r: -1 },
+  { q: -1, r: 0 },
+  { q: -1, r: +1 },
+  { q: 0, r: +1 }
+];
+
+function getNeighbors(q, r, cols, rows) {
+  const neighbors = [];
+  for (const d of HEX_DIRS) {
+    const nq = q + d.q;
+    const nr = r + d.r;
+    if (nq >= 0 && nq < cols && nr >= 0 && nr < rows) {
+      neighbors.push({ q: nq, r: nr });
+    }
+  }
+  return neighbors;
+}
 
 // Classify elevation from 0–1 into terrain bands
 function classifyElevation(e) {
@@ -129,6 +112,24 @@ function pickBiome(lm, we, tr, hy, q, r, rows, elevationBand) {
   return biome;
 }
 
+function findDownhill(q, r, hexes, cols, rows) {
+  const current = hexes[r][q];
+  let lowest = current;
+  let target = null;
+
+  const neighbors = getNeighbors(q, r, cols, rows);
+
+  for (const n of neighbors) {
+    const neighbor = hexes[n.r][n.q];
+    if (neighbor.elevationValue < lowest.elevationValue) {
+      lowest = neighbor;
+      target = neighbor;
+    }
+  }
+
+  return target; // null if no lower neighbor
+}
+
 export function generateHexMap(decoded) {
   const { lm, we, tr, hy } = decoded;
 
@@ -136,18 +137,54 @@ export function generateHexMap(decoded) {
   const rows = 12;
   const hexes = [];
 
+  // First pass: elevation + biome
   for (let r = 0; r < rows; r++) {
     const row = [];
     for (let q = 0; q < cols; q++) {
-      // elevation noise (separate channel)
-      const e = noise(q * 1.37, r * 2.11); // 0–1
+      // elevation noise (0–1)
+      const e = noise(q * 1.37, r * 2.11);
       const elevationBand = classifyElevation(e);
 
       const biome = pickBiome(lm, we, tr, hy, q, r, rows, elevationBand);
 
-      row.push({ q, r, biome, elevation: elevationBand });
+      row.push({
+        q,
+        r,
+        biome,
+        elevation: elevationBand,
+        elevationValue: e,
+        river: 0
+      });
     }
     hexes.push(row);
+  }
+
+  // Second pass: river simulation
+  for (let r = 0; r < rows; r++) {
+    for (let q = 0; q < cols; q++) {
+      const hex = hexes[r][q];
+
+      // Only start rivers in hills/mountains
+      if (hex.elevation === "hills" || hex.elevation === "mountains") {
+        let current = hex;
+
+        // Add initial flow
+        current.river = (current.river || 0) + 1;
+
+        // Follow downhill path
+        while (true) {
+          const next = findDownhill(current.q, current.r, hexes, cols, rows);
+          if (!next) break; // no downhill path
+
+          next.river = (next.river || 0) + 1;
+
+          // Stop if we reach ocean or coast
+          if (next.elevation === "ocean" || next.elevation === "coast") break;
+
+          current = next;
+        }
+      }
+    }
   }
 
   return { cols, rows, hexes };
@@ -171,6 +208,7 @@ export function renderHexMap(hexMap) {
   ctx.lineWidth = 1;
   ctx.strokeStyle = "#222";
 
+  // Draw hex biomes
   for (let r = 0; r < rows; r++) {
     for (let q = 0; q < cols; q++) {
       const hex = hexes[r][q];
@@ -181,6 +219,22 @@ export function renderHexMap(hexMap) {
       const y = r * h + h;
 
       drawHex(ctx, x, y, size, color);
+    }
+  }
+
+  // Draw rivers on top
+  for (let r = 0; r < rows; r++) {
+    for (let q = 0; q < cols; q++) {
+      const hex = hexes[r][q];
+      if (hex.river && hex.river > 1) {
+        const x = q * w + (r % 2 ? w / 2 : 0) + w;
+        const y = r * h + h;
+
+        ctx.beginPath();
+        ctx.fillStyle = hex.river > 3 ? "#1e90ff" : "#4cc9f0";
+        ctx.arc(x, y, Math.min(4, hex.river), 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
   }
 }
