@@ -369,18 +369,32 @@ export function generateHexMap(decoded) {
   for (let r = 0; r < rows; r++) {
     for (let q = 0; q < cols; q++) {
       const hex = hexes[r][q];
-
+  
       if (hex.elevation === "ocean" || hex.elevation === "coast") continue;
-
+  
       if (drainsToOcean(q, r, hexes, cols, rows)) continue;
-
+  
       const basin = floodFillBasin(q, r, hexes, cols, rows);
-
+  
+      // Base classification
       if (basin.length > 20) {
-        for (const h of basin) h.biome = "ocean";
+        for (const h of basin) h.biome = "ocean"; // inland sea
       } else if (basin.length > 6) {
         for (const h of basin) h.biome = "wetlands";
       } else {
+        for (const h of basin) h.biome = "wetlands"; // small lakes
+      }
+  
+      // Hydrology influence
+      if (hy.primary.includes("Lake")) {
+        if (basin.length > 4) for (const h of basin) h.biome = "wetlands";
+      }
+  
+      if (hy.primary.includes("Inland")) {
+        if (basin.length > 10) for (const h of basin) h.biome = "ocean";
+      }
+  
+      if (hy.primary.includes("Wetland")) {
         for (const h of basin) h.biome = "wetlands";
       }
     }
