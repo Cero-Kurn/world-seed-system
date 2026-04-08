@@ -67,6 +67,28 @@ function detectBoundaries(hexes, cols, rows) {
     }
   }
 }
+function applyTectonics(hexes, cols, rows) {
+  for (let r = 0; r < rows; r++) {
+    for (let q = 0; q < cols; q++) {
+      const hex = hexes[r][q];
+
+      if (hex.boundary === "convergent") {
+        // mountain uplift
+        hex.elevationValue = Math.min(1, hex.elevationValue + 0.35);
+      }
+
+      if (hex.boundary === "divergent") {
+        // rift valley
+        hex.elevationValue = Math.max(0, hex.elevationValue - 0.25);
+      }
+
+      if (hex.boundary === "transform") {
+        // rough terrain
+        hex.elevationValue += (noise(q, r) - 0.5) * 0.1;
+      }
+    }
+  }
+}
 
 // Simple deterministic noise based on q, r
 function noise(q, r) {
