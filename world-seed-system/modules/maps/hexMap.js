@@ -26,6 +26,8 @@ const HEX_COLORS = {
   "mixed": "#999999"
 };
 
+const COAST_THRESHOLD = 0.42; // tweak for more/less land
+
 // Axial hex directions (pointy-top)
 const HEX_DIRS = [
   { q: +1, r: 0 },
