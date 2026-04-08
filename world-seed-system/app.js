@@ -69,7 +69,14 @@ function renderRegions(regions) {
 // --- MAIN ACTIONS ---
 
 function processSeed(seed) {
-  const decoded = decodeSeed(seed);
+  let decoded;
+
+  try {
+    decoded = decodeSeed(seed);
+  } catch (err) {
+    alert("Invalid seed format.");
+    return;
+  }
 
   // Render decoded seed
   renderDecoded(decoded, seed);
