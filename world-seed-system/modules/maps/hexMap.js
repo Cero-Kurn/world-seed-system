@@ -38,7 +38,7 @@ const HEX_COLORS = {
 };
 
 // -----------------------------
-// Hex Grid Helpers
+// Hex Grid Helpers (Axial)
 // -----------------------------
 
 const HEX_DIRS = [
@@ -165,7 +165,6 @@ function applyTectonics(hexes, cols, rows) {
 
 function pickBiome(lm, we, tr, hy, q, r, rows, elevationBand) {
   const climate = lm.primary.toLowerCase();
-  const winds = we.primary.toLowerCase();
   const water = hy.primary.toLowerCase();
   const tect = tr.primary.toLowerCase();
 
@@ -475,12 +474,16 @@ export function renderHexMap(hexMap) {
   }
 }
 
+// -----------------------------
+// NEW drawHex() — correct pointy-top geometry
+// -----------------------------
+
 function drawHex(ctx, x, y, size, fill) {
-  const angle = Math.PI / 3;
   ctx.beginPath();
   for (let i = 0; i < 6; i++) {
-    const px = x + size * Math.cos(angle * i);
-    const py = y + size * Math.sin(angle * i);
+    const angle = (Math.PI / 180) * (60 * i - 30); // -30° for pointy-top
+    const px = x + size * Math.cos(angle);
+    const py = y + size * Math.sin(angle);
     if (i === 0) ctx.moveTo(px, py);
     else ctx.lineTo(px, py);
   }
