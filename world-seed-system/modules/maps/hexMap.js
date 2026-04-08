@@ -38,6 +38,35 @@ function assignPlates(hexes, plates, cols, rows) {
     }
   }
 }
+function detectBoundaries(hexes, cols, rows) {
+  for (let r = 0; r < rows; r++) {
+    for (let q = 0; q < cols; q++) {
+      const hex = hexes[r][q];
+      const neighbors = getNeighbors(q, r, cols, rows);
+
+      hex.boundary = "none";
+
+      for (const n of neighbors) {
+        const other = hexes[n.r][n.q];
+
+        if (other.plate !== hex.plate) {
+          // Simple rule: continental vs continental = mountains
+          if (hex.plateType === "continental" && other.plateType === "continental") {
+            hex.boundary = "convergent";
+          }
+          // oceanic vs continental = rift or trench
+          else if (hex.plateType !== other.plateType) {
+            hex.boundary = "divergent";
+          }
+          // fallback
+          else {
+            hex.boundary = "transform";
+          }
+        }
+      }
+    }
+  }
+}
 
 // Simple deterministic noise based on q, r
 function noise(q, r) {
