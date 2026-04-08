@@ -102,6 +102,12 @@ function pickBiome(lm, we, tr, hy, q, r, rows, elevationBand) {
   if (elevationBand === "mountains") biome = "alpine";
   if (elevationBand === "hills" && biome === "temperate forest" && n > 0.5)
     biome = "mixed";
+  if (elevationBand === "ocean") return "ocean";
+  if (elevationBand === "coast") {
+    // coastal wetlands or mangroves
+    if (lat > -0.25 && lat < 0.25) return "wetlands";
+    return "temperate forest";
+  }
 
   // --- HYDROLOGY MODIFIERS ---
   if (water.includes("sparse") && elevationBand !== "ocean" && n > 0.4)
