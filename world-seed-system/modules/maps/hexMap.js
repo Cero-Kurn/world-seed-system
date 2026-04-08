@@ -5,13 +5,13 @@
 // Simple deterministic noise based on q, r
 function noise(q, r) {
   const n = Math.sin(q * 12.9898 + r * 78.233) * 43758.5453;
-  return n - Math.floor(n); // 0–1
+  return n - Math.floor(n);
 }
 
 // Landmass noise (big continental shapes)
 function landNoise(q, r) {
   const n = Math.sin(q * 7.123 + r * 3.331) * 9999.1337;
-  return n - Math.floor(n); // 0–1
+  return n - Math.floor(n);
 }
 
 // Convert row index into a latitude value from -1 (south pole) to +1 (north pole)
@@ -231,7 +231,63 @@ function findDownhill(q, r, hexes, cols, rows) {
 
   return target;
 }
+// -----------------------------
+// Lake Detection Helpers
+// -----------------------------
 
+function drainsToOcean(q, r, hexes, cols, rows, visited = new Set()) {
+  const key = `${q},${r}`;
+  if (visited.has(key)) return false;
+  visited.add(key);
+
+  const hex = hexes[r][q];
+
+  if (hex.elevation === "ocean" || hex.elevation === "coast") {
+    return true;
+  }
+
+  const neighbors = getNeighbors(q, r, cols, rows);
+
+  for (const n of neighbors) {
+    const next = hexes[n.r][n.q];
+    if (next.elevationValue < hex.elevationValue) {
+      if (drainsToOcean(n.q, n.r, hexes, cols, rows, visited)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+function floodFillBasin(q, r, hexes, cols, rows, threshold = 0.55) {
+  const stack = [{ q, r }];
+  const basin = [];
+  const visited = new Set();
+
+  while (stack.length > 0) {
+    const { q, r } = stack.pop();
+    const key = `${q},${r}`;
+    if (visited.has(key)) continue;
+    visited.add(key);
+
+    const hex = hexes[r][q];
+    if (hex.elevationValue > threshold) continue;
+
+    basin.push(hex);
+
+    const neighbors = getNeighbors(q, r, cols, rows);
+    for (const n of neighbors) {
+      stack.push({ q: n.q, r: n.r });
+    }
+  }
+
+  return basin;
+}
+
+function isWaterBiome(biome) {
+  return biome === "ocean" || biome === "wetlands";
+}
 // -----------------------------
 // Main Map Generation
 // -----------------------------
@@ -303,6 +359,55 @@ export function generateHexMap(decoded) {
 
           current = next;
         }
+      }
+    }
+  }
+
+  // FIFTH PASS: lakes & inland seas
+  for (let r = 0; r < rows; r++) {
+    for (let q = 0; q < cols; q++) {
+      const hex = hexes[r][q];
+
+      if (hex.elevation === "ocean" || hex.elevation === "coast") continue;
+
+      if (drainsToOcean(q, r, hexes, cols, rows)) continue;
+
+      const basin = floodFillBasin(q, r, hexes, cols, rows);
+
+      if (basin.length > 20) {
+        for (const h of basin) h.biome = "ocean";
+      } else if (basin.length > 6) {
+        for (const h of basin) h.biome = "wetlands";
+      } else {
+        for (const h of basin) h.biome = "wetlands";
+      }
+    }
+  }
+
+  // SIXTH PASS: lake & inland sea shorelines
+  for (let r = 0; r < rows; r++) {
+    for (let q = 0; q < cols; q++) {
+      const hex = hexes[r][q];
+
+      if (isWaterBiome(hex.biome)) continue;
+
+      const neighbors = getNeighbors(q, r, cols, rows);
+      let touchesWater = false;
+
+      for (const n of neighbors) {
+        const nb = hexes[n.r][n.q];
+        if (isWaterBiome(nb.biome)) {
+          touchesWater = true;
+          break;
+        }
+      }
+
+      if (touchesWater) {
+        if (hex.biome === "tropical rainforest") hex.biome = "wetlands";
+        else if (hex.biome === "temperate forest") hex.biome = "mixed";
+        else if (hex.biome === "desert") hex.biome = "mixed";
+        else if (hex.biome === "tundra") hex.biome = "wetlands";
+        else hex.biome = "mixed";
       }
     }
   }
