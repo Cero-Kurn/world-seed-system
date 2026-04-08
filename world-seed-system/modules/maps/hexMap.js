@@ -3,7 +3,19 @@ function landNoise(q, r) {
   const n = Math.sin(q * 7.123 + r * 3.331) * 9999.1337;
   return n - Math.floor(n); // 0–1
 }
-
+// Generate N random tectonic plate centers
+function generatePlateCenters(cols, rows, count = 6) {
+  const plates = [];
+  for (let i = 0; i < count; i++) {
+    plates.push({
+      id: i,
+      q: Math.floor(Math.random() * cols),
+      r: Math.floor(Math.random() * rows),
+      type: Math.random() < 0.6 ? "continental" : "oceanic"
+    });
+  }
+  return plates;
+}
 // Simple deterministic noise based on q, r
 function noise(q, r) {
   const n = Math.sin(q * 12.9898 + r * 78.233) * 43758.5453;
