@@ -56,7 +56,14 @@ const HEX_DIRS = [
 
 function getNeighbors(q, r, cols, rows) {
   const neighbors = [];
-  for (const d of HEX_DIRS) {
+  // Offset neighbor logic (for pointy-top, odd-r)
+  const parity = r & 1;
+  const dirs = [
+    [ {q: 1, r: 0}, {q: 1, r: -1}, {q: 0, r: -1}, {q: -1, r: 0}, {q: 0, r: 1}, {q: 1, r: 1} ], // Odd rows
+    [ {q: 1, r: 0}, {q: 0, r: -1}, {q: -1, r: -1}, {q: -1, r: 0}, {q: -1, r: 1}, {q: 0, r: 1} ]  // Even rows
+  ];
+
+  for (const d of dirs[parity]) {
     const nq = q + d.q;
     const nr = r + d.r;
     if (nq >= 0 && nq < cols && nr >= 0 && nr < rows) {
