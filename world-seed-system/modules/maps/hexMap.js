@@ -16,6 +16,29 @@ function generatePlateCenters(cols, rows, count = 6) {
   }
   return plates;
 }
+function assignPlates(hexes, plates, cols, rows) {
+  for (let r = 0; r < rows; r++) {
+    for (let q = 0; q < cols; q++) {
+      let best = null;
+      let bestDist = Infinity;
+
+      for (const p of plates) {
+        const dq = p.q - q;
+        const dr = p.r - r;
+        const dist = dq * dq + dr * dr;
+
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = p;
+        }
+      }
+
+      hexes[r][q].plate = best.id;
+      hexes[r][q].plateType = best.type;
+    }
+  }
+}
+
 // Simple deterministic noise based on q, r
 function noise(q, r) {
   const n = Math.sin(q * 12.9898 + r * 78.233) * 43758.5453;
