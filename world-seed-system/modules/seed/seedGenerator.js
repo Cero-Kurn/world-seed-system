@@ -14,3 +14,16 @@ export function generateRandomSeed() {
   const sf = randomKey(SF_TABLE) + randomKey(SF_TABLE);
   return `${cc}-${lm}-${we}-${tr}-${hy}-${sf}`;
 }
+export function generateSeed() {
+  const chars = "123456789ABC";
+
+  const primary = Array.from({ length: 6 }, () =>
+    chars[Math.floor(Math.random() * chars.length)]
+  ).join("");
+
+  const secondary = Array.from({ length: 6 }, () =>
+    chars[Math.floor(Math.random() * chars.length)]
+  ).join("");
+
+  return `${primary}-${secondary}`;
+}
