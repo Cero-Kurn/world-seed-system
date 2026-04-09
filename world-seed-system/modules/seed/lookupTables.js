@@ -140,7 +140,6 @@ export const TR_TABLE = {
     "W": "Titanic mountain roots",
     "X": "Hyper‑active subduction",
     "Y": "GM’s choice",
-
 };
 
 export const HY_TABLE = {
@@ -150,6 +149,30 @@ export const HY_TABLE = {
   "4": "River lattice",
   "5": "Lake chains",
   "6": "Wetland basins",
+  "7": "Arid basins",
+  "8": "Seasonal floods",
+  "9": "Wetland belts",
+  "A": "Glacial meltwater",
+  "B": "Coastal deltas",
+  "C": "Karst aquifers",
+  "D": "Monsoon rivers",
+  "E": "Tectonic basins",
+  "F": "Ancient inland seas",
+  "G": "Chaotic hydrology",
+  "H": "Subterranean river networks",
+  "I": "Massive endorheic basins",
+  "J": "Hyper‑saline lakes",
+  "K": "Intermittent ghost rivers",
+  "L": "Volcanic steam‑fed springs",
+  "N": "Seasonal flash floods",
+  "O": "Braided river systems",
+  "P": "Ancient dried riverbeds",
+  "Q": "Subterranean aquifers",
+  "R": "Mineral‑rich waters",
+  "S": "Magical springs",
+  "T": "Saltwater intrusion",
+  "M": "Toxic wetlands",
+  "U": "GM’s choice",
 };
 
 export const SF_TABLE = {
