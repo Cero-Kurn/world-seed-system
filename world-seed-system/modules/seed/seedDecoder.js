@@ -46,8 +46,8 @@ export function decodeSeed(seed) {
   return {
     cc: {
       code: CC1,
-      primary: CC_TABLE[CC1] || `Unknown (${CC1})`,
-      secondary: CC_SECONDARY[CC2] || `Unknown (${CC2})`
+      primary: CC_TABLE[CC1] || `Unknown (${CC1}, "Continental Configuration")`,
+      secondary: CC_SECONDARY[CC2] || `Unknown (${CC2}, "Latitude & Temperature Model")`
     },
 
     lm: {
