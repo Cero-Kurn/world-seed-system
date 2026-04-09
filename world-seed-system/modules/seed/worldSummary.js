@@ -7,7 +7,7 @@ export function generateWorldSummary(decoded) {
   };
 
   return `
-    <p><strong>Continental Layout:</strong> ${combo(cc)}.</p>
+    <p><strong>Continental Layout:</strong>${trait.primary} — ${trait.secondary} ${combo(cc)}.</p>
     <p><strong>Climate:</strong> ${combo(lm)}.</p>
     <p><strong>Wind & Rainfall:</strong> ${combo(we)}.</p>
     <p><strong>Tectonics:</strong> ${combo(tr)}.</p>
