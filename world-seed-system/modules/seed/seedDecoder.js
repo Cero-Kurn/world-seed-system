@@ -17,13 +17,22 @@ export function decodeSeed(seed) {
   const [CC1, LM1, WE1, TR1, HY1, SF1, CC2, LM2, WE2, TR2, HY2, SF2] = clean;
 
   return {
-    cc: { code: CC1, primary: CC_TABLE[CC1], secondary: CC_SECONDARY[CC2], "Continental Configuration" },
-    lm: { code: LM1, primary: LM_TABLE[LM1], secondary: LM_SECONDARY[LM2], "Latitude & Temperature Model" },
-    we: { code: WE1, primary: WE_TABLE[WE1], secondary: WE_SECONDARY[WE2], "Wind & Rainfall Model" },
-    tr: { code: TR1, primary: TR_TABLE[TR1], secondary: TR_SECONDARY[TR2], "Tectonic & Elevation Model" },
-    hy: { code: HY1, primary: HY_TABLE[HY1], secondary: HY_SECONDARY[HY2], "Hydrology Model" },
-    sf: { code: SF1, primary: SF_TABLE[SF1], secondary: SF_SECONDARY[SF2], "Special Features Model" }
+    cc: decodePair{ code: CC1, primary: CC_TABLE[CC1], secondary: CC_SECONDARY[CC2], "Continental Configuration" },
+    lm: decodePair{ code: LM1, primary: LM_TABLE[LM1], secondary: LM_SECONDARY[LM2], "Latitude & Temperature Model" },
+    we: decodePair{ code: WE1, primary: WE_TABLE[WE1], secondary: WE_SECONDARY[WE2], "Wind & Rainfall Model" },
+    tr: decodePair{ code: TR1, primary: TR_TABLE[TR1], secondary: TR_SECONDARY[TR2], "Tectonic & Elevation Model" },
+    hy: decodePair{ code: HY1, primary: HY_TABLE[HY1], secondary: HY_SECONDARY[HY2], "Hydrology Model" },
+    sf: decodePair{ code: SF1, primary: SF_TABLE[SF1], secondary: SF_SECONDARY[SF2], "Special Features Model" }
   };
 }
 
+
+    cc: decodePair(cc, CC_TABLE, "Continental Configuration"),
+    lm: decodePair(lm, LM_TABLE, "Latitude & Temperature Model"),
+    we: decodePair(we, WE_TABLE, "Wind & Rainfall Model"),
+    tr: decodePair(tr, TR_TABLE, "Tectonic & Elevation Model"),
+    hy: decodePair(hy, HY_TABLE, "Hydrology Model"),
+    sf: decodePair(sf, SF_TABLE, "Special Features Model"),
+  };
+}
 
