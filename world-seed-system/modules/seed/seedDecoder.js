@@ -27,12 +27,3 @@ export function decodeSeed(seed) {
 }
 
 
-    cc: decodePair(cc, CC_TABLE, "Continental Configuration"),
-    lm: decodePair(lm, LM_TABLE, "Latitude & Temperature Model"),
-    we: decodePair(we, WE_TABLE, "Wind & Rainfall Model"),
-    tr: decodePair(tr, TR_TABLE, "Tectonic & Elevation Model"),
-    hy: decodePair(hy, HY_TABLE, "Hydrology Model"),
-    sf: decodePair(sf, SF_TABLE, "Special Features Model"),
-  };
-}
-
