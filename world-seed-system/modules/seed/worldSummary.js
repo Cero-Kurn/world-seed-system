@@ -15,7 +15,7 @@ export function generateWorldSummary(decoded) {
     <p><strong>Special Features:</strong> ${combo(sf)}.</p>
 
     <p style="margin-top:1rem;">
-      This world features ${trait.primary} — ${trait.secondary} shaped by ${tr.primary.toLowerCase()}.
+      This world features ${cc.primary.toLowerCase()} shaped by ${tr.primary.toLowerCase()}.
       Its climate follows ${lm.primary.toLowerCase()}, while ${we.primary.toLowerCase()} winds
       sculpt moisture patterns across the land. Hydrology is dominated by
       ${hy.primary.toLowerCase()}, and the landscape is marked by
