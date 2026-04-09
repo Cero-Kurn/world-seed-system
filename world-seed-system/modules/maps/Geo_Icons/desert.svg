@@ -1,0 +1,14 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <path
+    d="M8 44 Q 20 36 32 40 T 56 36 L 56 52 L 8 52 Z"
+    fill="#e9c46a"
+    stroke="#c79b3a"
+    stroke-width="2"
+  />
+  <path
+    d="M30 20 Q 32 14 34 20 T 38 32 Q 36 30 34 32 T 30 28 Z"
+    fill="#c79b3a"
+    stroke="#8b5a2b"
+    stroke-width="2"
+  />
+</svg>
