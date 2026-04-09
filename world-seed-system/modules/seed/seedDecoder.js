@@ -17,12 +17,6 @@ export function decodeSeed(seed) {
   const [CC1, LM1, WE1, TR1, HY1, SF1, CC2, LM2, WE2, TR2, HY2, SF2] = clean;
 
   return {
-    cc: decodePair(cc, CC_TABLE, "Continental Configuration"),
-    lm: decodePair(lm, LM_TABLE, "Latitude & Temperature Model"),
-    we: decodePair(we, WE_TABLE, "Wind & Rainfall Model"),
-    tr: decodePair(tr, TR_TABLE, "Tectonic & Elevation Model"),
-    hy: decodePair(hy, HY_TABLE, "Hydrology Model"),
-    sf: decodePair(sf, SF_TABLE, "Special Features Model"),
     cc: { code: CC1, primary: CC_TABLE[CC1], secondary: CC_SECONDARY[CC2] },
     lm: { code: LM1, primary: LM_TABLE[LM1], secondary: LM_SECONDARY[LM2] },
     we: { code: WE1, primary: WE_TABLE[WE1], secondary: WE_SECONDARY[WE2] },
